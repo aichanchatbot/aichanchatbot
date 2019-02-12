@@ -1,54 +1,64 @@
-# インポートするライブラリ
-from flask import Flask, request, abort
+from datetime import datetime
+from flask import jsonify
+from MadproBot import app
 
-from linebot import (
-    LineBotApi, WebhookHandler
-)
-from linebot.exceptions import (
-    InvalidSignatureError
-)
-from linebot.models import (
-    FollowEvent, MessageEvent, TextMessage, TextSendMessage, ImageMessage, ImageSendMessage, TemplateSendMessage, ButtonsTemplate, PostbackTemplateAction, MessageTemplateAction, URITemplateAction
-)
-import os
+@app.route('/')
+@app.route('/home')
+def home():
+    return jsonify({
+        "message": "this endpoint is active"
+    })
 
-# 軽量なウェブアプリケーションフレームワーク:Flask
-app = Flask(__name__)
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    reply_to_line(request.json)
+    return '', 200, {}
+
+def reply_to_line(body):
+    for event in body['events']:
+        responses = []
+
+        replyToken = event['replyToken']
+        type = event['type']
+        
+        if type == 'message':
+            message = event['message']
+            
+            if message['type'] == 'text':
+                # そのままオウム返し
+                responses.append(LineReplyMessage.make_text_response(message['text']))
+            else:
+                # テキスト以外のメッセージにはてへぺろしておく
+                responses.append(LineReplyMessage.make_text_response('てへぺろ'))
+
+        # 返信する
+        LineReplyMessage.send_reply(replyToken, responses)
 
 
-#環境変数からLINE Access Tokenを設定
-LINE_CHANNEL_ACCESS_TOKEN = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
-#環境変数からLINE Channel Secretを設定
-LINE_CHANNEL_SECRET = os.environ["LINE_CHANNEL_SECRET"]
+class LineReplyMessage:
+    ReplyEndpoint = 'https://api.line.me/v2/bot/message/reply'
+    AccessToken = '<LINE_CHANNEL_ACCESS_TOKEN>'
 
-line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
-handler = WebhookHandler(LINE_CHANNEL_SECRET)
+    @staticmethod
+    def make_text_response(text):
+        return {
+            'type': 'text',
+            'text': text
+        }
 
-@app.route("/callback", methods=['POST'])
-def callback():
-    # get X-Line-Signature header value
-    signature = request.headers['X-Line-Signature']
+    @staticmethod
+    def send_reply(replyToken, messages):
+        reply = {
+            'replyToken': replyToken,
+            'messages': messages
+        }
 
-    # get request body as text
-    body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer {}'.format(LineReplyMessage.AccessToken)
+        }
 
-    # handle webhook body
-    try:
-        handler.handle(body, signature)
-    except InvalidSignatureError:
-        abort(400)
-
-    return 'OK'
-
-# MessageEvent
-@handler.add(MessageEvent, message=TextMessage)
-def handle_message(event):
-	line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text='「' + event.message.text + '」って何？')
-     )
-
-if __name__ == "__main__":
-    port = int(os.getenv("PORT"))
-    app.run(host="0.0.0.0", port=port)
+        requests.post(
+            LineReplyMessage.ReplyEndpoint,
+            data=json.dumps(reply),
+            headers=headers)
