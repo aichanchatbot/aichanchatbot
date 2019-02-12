@@ -1,0 +1,9 @@
+﻿line-bot-sdk==1.8.0
+future==0.17.1
+requests==2.21.0
+Flask== 1.0.2
+click==7.0
+itsdangerous==1.1.0
+Jinja2==2.10
+MarkupSafe==1.1.0
+Werkzeug==0.14.1
