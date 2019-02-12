@@ -1,7 +1,6 @@
 import requests
  
 REPLY_ENDPOINT = 'https://api.line.me/v2/bot/message/reply'
-text = "こんにちは"
 
 def post_text(reply_token, text):
     header = {
