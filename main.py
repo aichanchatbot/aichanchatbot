@@ -1,18 +1,19 @@
 import requests
  
 REPLY_ENDPOINT = 'https://api.line.me/v2/bot/message/reply'
+ACCESS_TOKEN = 'tkRCRSMlOvPMRWBmcARN3isuPn0uOwUfi8BYH2369KNNNAPMJuu2i0KmTHr7HnC609rktbNOBXk9ZeUz1c9KNTrLNPVFSJg8C+4Os4d5n+oklTOXPrqkDuG+dsMzWKIRplvCuid+eAwpXNOZMDSXbgdB04t89/1O/w1cDnyilFU='
 
 def post_text(reply_token, text):
     header = {
-        "Content-Type":"application/json",
-        "Authorization":"Bearer{ACCESS_TOKEN}"
+        'Content-Type': 'application/json',
+        'Authorization':'Bearer 'ACCESS_TOKEN
     }
     payload = {
-          "replyToken":reply_token,
-          "messages":[
+          'replyToken': reply_token,
+          'messages':[
                 {
-                    "type":"text",
-                    "text":text
+                    'type': 'text',
+                    'text': text
                 }
             ]
     }
