@@ -22,13 +22,21 @@ line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(YOUR_CHANNEL_SECRET)
 
 ## 1 ##
-#Webhookからのリクエストをチェックします。
+###############################################
+#Webhookからのリクエストをチェック
+###############################################
+
+# リクエストヘッダーから署名検証のための値を取得します。
+# リクエストボディを取得します。
+# 署名を検証し、問題なければhandleに定義されている関数を呼び出す。
+# 署名検証で失敗した場合、例外を出す。
+# handleの処理を終えればOK
+
 @app.route("/callback", methods=['POST'])
 def callback():
-    # リクエストヘッダーから署名検証のための値を取得します。
+
     signature = request.headers['X-Line-Signature']
  
-    # リクエストボディを取得します。
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
  
