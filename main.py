@@ -89,7 +89,7 @@ def docomo_api(event):
     headers = {'Context-type': 'application/json'}
     # リクエストURL
     url = "https://api.apigw.smt.docomo.ne.jp/naturalChatting/v1/dialogue?APIKEY={}".format(APIKEY)
-    send_data['voiceText'] = event.message.text
+    send_data['voiceText'] = "{}".format(event.message.text)
     # 送信時間を取得
     send_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     send_data['appSendTime'] = send_time
