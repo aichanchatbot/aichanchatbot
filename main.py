@@ -21,7 +21,6 @@ YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
 line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(YOUR_CHANNEL_SECRET)
 
-
 ## 1 ##
 ###############################################
 #Webhookからのリクエストをチェック
@@ -52,28 +51,20 @@ def callback():
 
 ## 2 ##
 ###############################################
-#LINEのメッセージの取得と返信内容の設定
+#LINEのメッセージの取得と返信内容の設定(オウム返し)
 ###############################################
-
-#キーワードに一致する場合はキーワードを返し、一致しない場合オウム返しする 
+ 
 #LINEでMessageEvent（普通のメッセージを送信された場合）が起こった場合に、
 #def以下の関数を実行します。
 #reply_messageの第一引数のevent.reply_tokenは、イベントの応答に用いるトークンです。 
 #第二引数には、linebot.modelsに定義されている返信用のTextSendMessageオブジェクトを渡しています。
-
-talk = {
- "こんにちは" : "こんにちは!",
- "元気?" : "超元気です!",
- "名前を教えて" : "私の名前はAIchanです。"
- }
-
+ 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
- if line_bot_api.reply_message(event.reply_token, TextSendMessage(text=talk[event.message.text]))
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=event.message.text)) #ここでオウム返しのメッセージを返します。
  
- else:
-  line_bot_api.reply_message(event.reply_token, TextSendMessage(text=event.message.text))
-    
 # ポート番号の設定
 if __name__ == "__main__":
 #    app.run()
