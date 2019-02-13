@@ -10,6 +10,9 @@ from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage,
 )
 import os
+import requests
+import json
+from datetime import datetime
  
 app = Flask(__name__)
  
@@ -57,48 +60,7 @@ def callback():
 ###############################################
 #LINEのメッセージの取得と返信内容の設定(オウム返し)
 ###############################################
-import requests
-import json
-from datetime import datetime
 
-# APIキー
-APIKEY = "6b596f636d5262304453596f6a4d646a653643514f33446b586a57754831764462376a50427453794d5130"
-
-# リクエストボディ(JSON形式)
-send_data = {
-    "language": "ja-JP",
-    "botId": "Chatting",
-    "appId": "67552b25-9624-4fd8-8d59-6c4fc093ef9e",
-    "voiceText": "",
-    "clientData": {
-        "option": {
-            "nickname": "ポコ太",
-            "nicknameY": "ポコタ",
-            "sex": "男",
-            "age": "1",
-            "mode": "dialog"
-        },
-    },
-    "appSendTime": "YYYY-MM-DD hh:mm:ss"
-    }
-
-
-# リクエストヘッダ
-headers = {'Context-type': 'application/json'}
-
-# リクエストURL
-url = "https://api.apigw.smt.docomo.ne.jp/naturalChatting/v1/dialogue?APIKEY={}".format(APIKEY)
-
-send_data['voiceText'] = event.message.text
-# 送信時間を取得
-send_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-send_data['appSendTime'] = send_time
-
-# メッセージを送信
-r = requests.post(url, data=json.dumps(send_data), headers=headers)
-# レスポンスデータから返答内容を取得
-return_data = r.json()
-docomo_res = return_data['systemText']['expression']
 
 
 ## 2 ##
@@ -116,7 +78,43 @@ def handle_message(event):
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=docomo_res)) #ここでオウム返しのメッセージを返します。
- 
+  
+  
+  # APIキー
+  APIKEY = "6b596f636d5262304453596f6a4d646a653643514f33446b586a57754831764462376a50427453794d5130"
+  
+  # リクエストボディ(JSON形式)
+  send_data = {
+   "language": "ja-JP",
+   "botId": "Chatting",
+   "appId": "67552b25-9624-4fd8-8d59-6c4fc093ef9e",
+   "voiceText": "",
+   "clientData": {
+    "option": {
+     "nickname": "ポコ太",
+     "nicknameY": "ポコタ",
+     "sex": "男",
+     "age": "1",
+     "mode": "dialog"
+     },
+    },
+   "appSendTime": "YYYY-MM-DD hh:mm:ss"
+   }
+  
+  # リクエストヘッダ
+  headers = {'Context-type': 'application/json'}
+  # リクエストURL
+  url = "https://api.apigw.smt.docomo.ne.jp/naturalChatting/v1/dialogue?APIKEY={}".format(APIKEY)
+  send_data['voiceText'] = event.message.text
+  # 送信時間を取得
+  send_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+  send_data['appSendTime'] = send_time
+  # メッセージを送信
+  r = requests.post(url, data=json.dumps(send_data), headers=headers)
+  # レスポンスデータから返答内容を取得
+  return_data = r.json()
+  docomo_res = return_data['systemText']['expression']
+
 # ポート番号の設定
 if __name__ == "__main__":
 #    app.run()
