@@ -1,82 +1,79 @@
-from flask import Flask, request, abort
- 
-from linebot import (
-    LineBotApi, WebhookHandler
-)
-from linebot.exceptions import (
-    InvalidSignatureError
-)
-from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage,
-)
+import json
 import os
- 
-app = Flask(__name__)
- 
-#環境変数取得
-# LINE Developersで設定されているアクセストークンとChannel Secretをを取得し、設定します。
-YOUR_CHANNEL_ACCESS_TOKEN = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
-YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
- 
-line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
-handler = WebhookHandler(YOUR_CHANNEL_SECRET)
+from logging import DEBUG, StreamHandler, getLogger
+
+import requests
+
+import doco.client
+import falcon
+
+# logger
+logger = getLogger(__name__)
+handler = StreamHandler()
+handler.setLevel(DEBUG)
+logger.setLevel(DEBUG)
+logger.addHandler(handler)
+
+ENDPOINT_URI = 'https://trialbot-api.line.me/v1/events'
+DOCOMO_API_KEY = os.environ.get('DOCOMO_API_KEY', '')
 
 
-## 1 ##
-###############################################
-#Webhookからのリクエストをチェック
-###############################################
+class CallbackResource(object):
+    # line
+    header = {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Line-ChannelID': os.environ['LINE_CHANNEL_ID'],
+        'X-Line-ChannelSecret': os.environ['LINE_CHANNEL_SECRET'],
+        'X-Line-Trusted-User-With-ACL': os.environ['LINE_CHANNEL_MID'],
+    }
 
-# リクエストヘッダーから署名検証のための値を取得します。
-# リクエストボディを取得します。
-# 署名を検証し、問題なければhandleに定義されている関数を呼び出す。
-# 署名検証で失敗した場合、例外を出す。
-# handleの処理を終えればOK
+    # docomo
+    user = {'t': 20}  # 20:kansai character
+    docomo_client = doco.client.Client(apikey=DOCOMO_API_KEY, user=user)
 
-@app.route("/callback", methods=['POST'])
-def callback():
+    def on_post(self, req, resp):
 
-    signature = request.headers['X-Line-Signature']
- 
-    body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
- 
+        body = req.stream.read()
+        if not body:
+            raise falcon.HTTPBadRequest('Empty request body',
+                                        'A valid JSON document is required.')
 
-    try:
-        handler.handle(body, signature)
+        receive_params = json.loads(body.decode('utf-8'))
+        logger.debug('receive_params: {}'.format(receive_params))
 
-    except InvalidSignatureError:
-        abort(400)
+        for msg in receive_params['result']:
 
-    return 'OK'
+            logger.debug('msg: {}'.format(msg))
 
-## 2 ##
-###############################################
-#LINEのメッセージの取得と返信内容の設定
-###############################################
+            try:
+                docomo_res = self.docomo_client.send(
+                    utt=msg['content']['text'], apiname='Dialogue')
 
-#キーワードに一致する場合はキーワードを返し、一致しない場合オウム返しする 
-#LINEでMessageEvent（普通のメッセージを送信された場合）が起こった場合に、
-#def以下の関数を実行します。
-#reply_messageの第一引数のevent.reply_tokenは、イベントの応答に用いるトークンです。 
-#第二引数には、linebot.modelsに定義されている返信用のTextSendMessageオブジェクトを渡しています。
+            except Exception:
+                raise falcon.HTTPError(falcon.HTTP_503,
+                                       'Docomo API Error. ',
+                                       'Could not invoke docomo api.')
 
-talk = {
- "こんにちは" : "こんにちは!",
- "元気?" : "超元気です!",
- "名前を教えて" : "私の名前はAIchanです。"
- }
+            logger.debug('docomo_res: {}'.format(docomo_res))
 
-@handler.add(MessageEvent, message=TextMessage)
-def handle_message(event):
- if event.message.text in talk:
-     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=talk[event.message.text]))
- 
- else:
-  line_bot_api.reply_message(event.reply_token, TextSendMessage(text=event.message.text))
-    
-# ポート番号の設定
-if __name__ == "__main__":
-#    app.run()
-    port = int(os.getenv("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+            send_content = {
+                'to': [msg['content']['from']],
+                'toChannel': 1383378250,  # Fixed value
+                'eventType': '138311608800106203',  # Fixed value
+                'content': {
+                    'contentType': 1,
+                    'toType': 1,
+                    'text': docomo_res['utt'],
+                },
+            }
+            send_content = json.dumps(send_content)
+            logger.debug('send_content: {}'.format(send_content))
+
+            res = requests.post(ENDPOINT_URI, data=send_content, headers=self.header)
+            logger.debug('res: {} {}'.format(res.status_code, res.reason))
+
+            resp.body = json.dumps('OK')
+
+
+api = falcon.API()
+api.add_route('/callback', CallbackResource())
