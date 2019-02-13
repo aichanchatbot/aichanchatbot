@@ -63,9 +63,14 @@ def callback():
 #第二引数には、linebot.modelsに定義されている返信用のTextSendMessageオブジェクトを渡しています。
  
 @handler.add(MessageEvent, message=TextMessage)
-
+def handle_message(event, send_message):
+    send_message = event.message.text
+    docomo_api()
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=docomo_api(docomo_res)))
+    
 def docomo_api(docomo_res):
-
     # APIキー
     APIKEY = "6b596f636d5262304453596f6a4d646a653643514f33446b586a57754831764462376a50427453794d5130"
     # リクエストボディ(JSON形式)
@@ -100,13 +105,7 @@ def docomo_api(docomo_res):
     return_data = r.json()
     docomo_res = return_data['systemText']['expression']
 
-def handle_message(event, send_message):
- 
-    send_message = event.message.text
-  
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=docomo_api(docomo_res)))
+
 
 # ポート番号の設定
 if __name__ == "__main__":
