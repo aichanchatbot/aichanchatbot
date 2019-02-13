@@ -77,8 +77,10 @@ def callback():
 def handle_message(event):
  line_bot_api.reply_message(
   event.reply_token,
-  TextSendMessage(text=docomo_res))
+  TextSendMessage(text=docomo_res)) 
+ docomo_res = response
  
+def docomo_api(event.message.text):
  # APIキー
  APIKEY = "6b596f636d5262304453596f6a4d646a653643514f33446b586a57754831764462376a50427453794d5130"
  
@@ -103,7 +105,7 @@ def handle_message(event):
  r = requests.post(url, data=json.dumps(send_data), headers=headers)
  # レスポンスデータから返答内容を取得
  return_data = r.json()
- docomo_res = return_data['systemText']['expression']
+ response = return_data['systemText']['expression']
 
 # ポート番号の設定
 if __name__ == "__main__":
