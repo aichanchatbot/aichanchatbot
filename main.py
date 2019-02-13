@@ -80,7 +80,7 @@ def handle_message(event):
   TextSendMessage(text=docomo_res)) 
  docomo_res = response
  
-def docomo_api(event.message.text):
+def docomo_api(event):
  # APIキー
  APIKEY = "6b596f636d5262304453596f6a4d646a653643514f33446b586a57754831764462376a50427453794d5130"
  
