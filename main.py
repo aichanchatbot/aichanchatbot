@@ -102,7 +102,7 @@ def docomo_api(event):
 def handle_message(event, docomo_api):
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=docomo_res))
+        TextSendMessage(text="{}".format(docomo_res)))
     
 # ポート番号の設定
 if __name__ == "__main__":
