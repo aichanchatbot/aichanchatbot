@@ -63,11 +63,12 @@ def callback():
 #第二引数には、linebot.modelsに定義されている返信用のTextSendMessageオブジェクトを渡しています。
  
 @handler.add(MessageEvent, message=TextMessage)
-def docomo_send(event):
+def docomo_send(event, docomo_res):
     
     # APIキー
     APIKEY = "6b596f636d5262304453596f6a4d646a653643514f33446b586a57754831764462376a50427453794d5130"
     # リクエストボディ(JSON形式)
+    event = event.message.text
     send_data = {
         "language": "ja-JP",
         "botId": "Chatting",
@@ -89,23 +90,21 @@ def docomo_send(event):
     headers = {'Context-type': 'application/json'}
     # リクエストURL
     url = "https://api.apigw.smt.docomo.ne.jp/naturalChatting/v1/dialogue?APIKEY={}".format(APIKEY)
-    send_data['voiceText'] = "{}".format(event.message.text)
+    send_data['voiceText'] = "{}".format(event)
     # 送信時間を取得
     send_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     send_data['appSendTime'] = send_time
     # メッセージを送信
     r = requests.post(url, data=json.dumps(send_data), headers=headers)
-    
-def docomo_response(docomo_res):
- # レスポンスデータから返答内容を取得
- return_data = r.json()
- docomo_res = return_data['systemText']['expression']
- print(docomo_res)
+    # レスポンスデータから返答内容を取得
+    return_data = r.json()
+    docomo_res = return_data['systemText']['expression']
+    print(docomo_res)
 
-def handle_message(event):
+def handle_message(event, docomo_res):
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text="{}".format(docomo_response(docomo_res))))
+        TextSendMessage(text=( ,docomo_res)))
     
 # ポート番号の設定
 if __name__ == "__main__":
