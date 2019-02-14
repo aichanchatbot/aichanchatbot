@@ -63,7 +63,7 @@ def callback():
 #第二引数には、linebot.modelsに定義されている返信用のTextSendMessageオブジェクトを渡しています。
  
 @handler.add(MessageEvent, message=TextMessage)
-def docomo_api(event, docomo_res):
+def docomo_api(docomo_res):
     
     # APIキー
     APIKEY = "6b596f636d5262304453596f6a4d646a653643514f33446b586a57754831764462376a50427453794d5130"
