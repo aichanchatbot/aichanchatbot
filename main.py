@@ -98,7 +98,7 @@ def docomo_api(event, docomo_res):
     # レスポンスデータから返答内容を取得
     return_data = r.json()
     docomo_res = return_data['systemText']['expression']
-    return handle_message(docomo_res)
+    print(docomo_res)
 
 def handle_message(event, docomo_res):
     line_bot_api.reply_message(
