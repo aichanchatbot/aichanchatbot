@@ -1,79 +1,112 @@
-import json
+from flask import Flask, request, abort
+ 
+from linebot import (
+    LineBotApi, WebhookHandler
+)
+from linebot.exceptions import (
+    InvalidSignatureError
+)
+from linebot.models import (
+    MessageEvent, TextMessage, TextSendMessage,
+)
 import os
-from logging import DEBUG, StreamHandler, getLogger
-
 import requests
+import json
+from datetime import datetime
+ 
+app = Flask(__name__)
+ 
+#環境変数取得
+# LINE Developersで設定されているアクセストークンとChannel Secretをを取得し、設定します。
+YOUR_CHANNEL_ACCESS_TOKEN = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
+YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
+ 
+line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
+handler = WebhookHandler(YOUR_CHANNEL_SECRET)
 
-import doco.client
-import falcon
+## 1 ##
+###############################################
+#Webhookからのリクエストをチェック
+###############################################
 
-# logger
-logger = getLogger(__name__)
-handler = StreamHandler()
-handler.setLevel(DEBUG)
-logger.setLevel(DEBUG)
-logger.addHandler(handler)
+# リクエストヘッダーから署名検証のための値を取得します。
+# リクエストボディを取得します。
+# 署名を検証し、問題なければhandleに定義されている関数を呼び出す。
+# 署名検証で失敗した場合、例外を出す。
+# handleの処理を終えればOK
 
-ENDPOINT_URI = 'https://trialbot-api.line.me/v1/events'
-DOCOMO_API_KEY = os.environ.get('DOCOMO_API_KEY', '')
+@app.route("/callback", methods=['POST'])
+def callback():
 
+    signature = request.headers['X-Line-Signature']
+ 
+    body = request.get_data(as_text=True)
+    app.logger.info("Request body: " + body)
+ 
 
-class CallbackResource(object):
-    # line
-    header = {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'X-Line-ChannelID': os.environ['LINE_CHANNEL_ID'],
-        'X-Line-ChannelSecret': os.environ['LINE_CHANNEL_SECRET'],
-        'X-Line-Trusted-User-With-ACL': os.environ['LINE_CHANNEL_MID'],
-    }
+    try:
+        handler.handle(body, signature)
 
-    # docomo
-    user = {'t': 20}  # 20:kansai character
-    docomo_client = doco.client.Client(apikey=DOCOMO_API_KEY, user=user)
+    except InvalidSignatureError:
+        abort(400)
 
-    def on_post(self, req, resp):
+    return 'OK'
 
-        body = req.stream.read()
-        if not body:
-            raise falcon.HTTPBadRequest('Empty request body',
-                                        'A valid JSON document is required.')
-
-        receive_params = json.loads(body.decode('utf-8'))
-        logger.debug('receive_params: {}'.format(receive_params))
-
-        for msg in receive_params['result']:
-
-            logger.debug('msg: {}'.format(msg))
-
-            try:
-                docomo_res = self.docomo_client.send(
-                    utt=msg['content']['text'], apiname='Dialogue')
-
-            except Exception:
-                raise falcon.HTTPError(falcon.HTTP_503,
-                                       'Docomo API Error. ',
-                                       'Could not invoke docomo api.')
-
-            logger.debug('docomo_res: {}'.format(docomo_res))
-
-            send_content = {
-                'to': [msg['content']['from']],
-                'toChannel': 1383378250,  # Fixed value
-                'eventType': '138311608800106203',  # Fixed value
-                'content': {
-                    'contentType': 1,
-                    'toType': 1,
-                    'text': docomo_res['utt'],
+## 2 ##
+###############################################
+#LINEのメッセージの取得と返信内容の設定(オウム返し)
+###############################################
+ 
+#LINEでMessageEvent（普通のメッセージを送信された場合）が起こった場合に、
+#def以下の関数を実行します。
+#reply_messageの第一引数のevent.reply_tokenは、イベントの応答に用いるトークンです。 
+#第二引数には、linebot.modelsに定義されている返信用のTextSendMessageオブジェクトを渡しています。
+ 
+@handler.add(MessageEvent, message=TextMessage)
+def docomo_api(event, docomo_res):
+    
+    # APIキー
+    APIKEY = "6b596f636d5262304453596f6a4d646a653643514f33446b586a57754831764462376a50427453794d5130"
+    # リクエストボディ(JSON形式)
+    send_data = {
+        "language": "ja-JP",
+        "botId": "Chatting",
+        "appId": "67552b25-9624-4fd8-8d59-6c4fc093ef9e",
+        "voiceText": "",
+        "clientData": {
+            "option": {
+                "nickname": "ポコ太",
+                "nicknameY": "ポコタ",
+                "sex": "男",
+                "age": "1",
+                "mode": "dialog"
                 },
-            }
-            send_content = json.dumps(send_content)
-            logger.debug('send_content: {}'.format(send_content))
+            },
+        "appSendTime": "YYYY-MM-DD hh:mm:ss"
+        }
 
-            res = requests.post(ENDPOINT_URI, data=send_content, headers=self.header)
-            logger.debug('res: {} {}'.format(res.status_code, res.reason))
+    # リクエストヘッダ
+    headers = {'Context-type': 'application/json'}
+    # リクエストURL
+    url = "https://api.apigw.smt.docomo.ne.jp/naturalChatting/v1/dialogue?APIKEY={}".format(APIKEY)
+    send_data['voiceText'] = "{}".format(event.message.text)
+    # 送信時間を取得
+    send_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    send_data['appSendTime'] = send_time
+    # メッセージを送信
+    r = requests.post(url, data=json.dumps(send_data), headers=headers)
+    # レスポンスデータから返答内容を取得
+    return_data = r.json()
+    docomo_res = return_data['systemText']['expression']:
+        return handle_message(docomo_res)
 
-            resp.body = json.dumps('OK')
-
-
-api = falcon.API()
-api.add_route('/callback', CallbackResource())
+def handle_message(event, docomo_res):
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text="{}".format(docomo_res)))
+    
+# ポート番号の設定
+if __name__ == "__main__":
+#    app.run()
+    port = int(os.getenv("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
