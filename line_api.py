@@ -68,44 +68,39 @@ def handle_message(event):
     INDEX2 = event.message.text.find(u"食べたい")
     gnavi_message = event.message.text
     docomo_message = event.message.text
-    f = open('temp.txt', mode='r', encoding='utf-8')
-    
+    with open('/app/temp.txt', mode='r', encoding='utf-8') as f:
+        temp = f.read()
+   
     if INDEX != -1:
-        f.close()
         line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text="私の名前はaichanだよ"))
 
     if INDEX2 != -1:
-        f.close()
         gnavi_message1 = talk1()
         line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text="{}".format(gnavi_message1)))
 
-    if f in '2':
-        f.close()
+    if temp == 2:
         gnavi_message2 = talk2(gnavi_message)
         line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text="{}".format(gnavi_message2)))
 
-    if f in '3':
-        f.close()
+    if temp == 3:
         gnavi_message3 = talk3(gnavi_message)
         line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text="{}".format(gnavi_message3)))
 
-    if f in '4':
-        f.close()
+    if temp == 4:
         gnavi_message4 = talk4(gnavi_message)
         line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text="{}".format(gnavi_message4)))
 
     else:
-        f.close()
         docomo_response = docomo_api(docomo_message)
         line_bot_api.reply_message(
         event.reply_token,
