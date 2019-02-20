@@ -18,7 +18,7 @@ def gnaviserch(area):
     url = "https://api.gnavi.co.jp/RestSearchAPI/v3/"
     #パラメータの設定
     params={}
-    params["keyid"] = "041bf926060de0bdcbe537265b4c78ea" #取得したアクセスキー
+    params["keyid"] = "3fcdbaa2b34fc211c86ceddeb1b7ab8c" #取得したアクセスキー
     params["category_s"] = "{}".format(category)
     params["pref"] = "{}".format(pref)
     params["freeword"] = "{}".format(area)
