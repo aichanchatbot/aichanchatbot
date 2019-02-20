@@ -70,7 +70,7 @@ def gnaviserch(area):
 
 
 def category_serch(categorycode):
-    csv_file = open("./data/category_s.csv", "r", encoding="utf-8", errors="", newline="" )
+    csv_file = open("/app/data/category_s.csv", "r", encoding="utf-8", errors="", newline="" )
     f = csv.DictReader(csv_file, delimiter=",", doublequote=False, lineterminator="\n", quotechar='"', skipinitialspace=True)
     try:
         for row in f:
@@ -80,13 +80,13 @@ def category_serch(categorycode):
                 return row["category_s_code"]
     
     except TypeError:
-        f = open('temp.txt', mode='w', encoding='utf-8')
+        f = open('/app/temp.txt', mode='w', encoding='utf-8')
         f.write('')
         f.close()
         return "ごめんね。言葉として認識できなかったよ。"
 
 def pref_serch(prefcode):
-    csv_file = open("./data/pref.csv", "r", encoding="utf-8", errors="", newline="" )
+    csv_file = open("/app/data/pref.csv", "r", encoding="utf-8", errors="", newline="" )
     f = csv.DictReader(csv_file, delimiter=",", doublequote=False, lineterminator="\n", quotechar='"', skipinitialspace=True)
     try:
         for row in f:
@@ -95,13 +95,13 @@ def pref_serch(prefcode):
                 print(row["pref_code"])
                 return row["pref_code"]
     except TypeError:
-        f = open('temp.txt', mode='w', encoding='utf-8')
+        f = open('/app/temp.txt', mode='w', encoding='utf-8')
         f.write('')
         f.close()
         return "ごめんね。言葉として認識できなかったよ。"
 
 def talk1():
-    f = open('temp.txt', mode='w', encoding='utf-8')
+    f = open('/app/temp.txt', mode='w', encoding='utf-8')
     f.write('2')
     f.close()
     return "食べたい物、または何のお店のジャンルを教えて！"
@@ -109,10 +109,10 @@ def talk1():
 def talk2(text):
     token_text = token(text)
     category_text = category_serch(token_text)
-    f = open('category.txt', mode='w', encoding='utf-8')
+    f = open('/app/category.txt', mode='w', encoding='utf-8')
     f.write(category_text)
     f.close()
-    f = open('temp.txt', mode='w', encoding='utf-8')
+    f = open('/app/temp.txt', mode='w', encoding='utf-8')
     f.write('3')
     f.close()
     return "どこの都道府県で探す？"
@@ -120,10 +120,10 @@ def talk2(text):
 def talk3(text):
     token_text = token(text)
     pref_text = pref_serch(token_text)
-    f = open('pref.txt', mode='w', encoding='utf-8')
+    f = open('/app/pref.txt', mode='w', encoding='utf-8')
     f.write(pref_text)
     f.close()
-    f = open('temp.txt', mode='w', encoding='utf-8')
+    f = open('/app/temp.txt', mode='w', encoding='utf-8')
     f.write('4')
     f.close()
     return "駅名か地名を教えて"
@@ -131,7 +131,7 @@ def talk3(text):
 def talk4(text):
     token_text = token(text)
     gnaviserch(token_text)
-    f = open('temp.txt', mode='w', encoding='utf-8')
+    f = open('/app/temp.txt', mode='w', encoding='utf-8')
     f.write('')
     f.close()
     return gnaviserch
