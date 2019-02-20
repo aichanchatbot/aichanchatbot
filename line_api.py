@@ -9,6 +9,7 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage,
 )
+import os
 from docomo_api import docomo_api
 from gnavi_api import talk1, talk2, talk3, talk4
  
