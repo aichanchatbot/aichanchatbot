@@ -21,6 +21,9 @@ YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
 line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(YOUR_CHANNEL_SECRET)
 
+port = int(os.getenv("PORT", 5000))
+app.run(host="0.0.0.0", port=port)
+
 ## 1 ##
 ###############################################
 #Webhookからのリクエストをチェック
@@ -69,5 +72,3 @@ def handle_message(event):
         event.reply_token,
         TextSendMessage(text="{}".format(s_text))
         
-    port = int(os.getenv("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
