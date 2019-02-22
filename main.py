@@ -5,6 +5,7 @@ from docomo_api import docomo_api
 from gnavi_api import gnaviserch
  
 
+port()
 callback()
 handle_message()
 
