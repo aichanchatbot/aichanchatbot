@@ -67,7 +67,7 @@ def handle_message(event):
 
     INDEX = event.message.text.find(u"名前")
     INDEX2 = event.message.text.find(u"食べたい")
-    INDEX3 = event.message.text.find(u"　")
+    INDEX3 = event.message.text.find(u" ")
 
     if INDEX != -1:
         line_bot_api.reply_message(
