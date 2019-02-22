@@ -157,7 +157,10 @@ def gnaviserch(word):
     hit = len(result_api['rest'])
     # ループで、ヒットした店名を表示させる
     for i in range(hit):
-        return "店名:{}".format(result_api['rest'][i]["name"]["url"])
+        name = "店名:{}".format(result_api['rest'][i]["name"])
+        url = "店名:{}".format(result_api['rest'][i]["url"])
+        res = '\n'.join(name, url)
+        return res
         
 # ポート番号の設定
 if __name__ == "__main__":
