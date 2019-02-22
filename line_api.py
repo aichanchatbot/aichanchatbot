@@ -65,11 +65,6 @@ def callback():
  
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-
-    r_text = event.message.text
-    s_text = reply_text(r_text)
-
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text="{}".format(s_text))
-        
+ r_text = event.message.text
+ s_text = reply_text(r_text)
+ line_bot_api.reply_message(event.reply_token, TextSendMessage(text="{}".format(s_text))
