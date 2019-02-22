@@ -67,7 +67,7 @@ def handle_message(event):
 
     INDEX = event.message.text.find(u"名前")
     INDEX2 = event.message.text.find(u"食べたい")
-    INDEX3 = event.message.text.find(u" ")
+    INDEX3 = event.message.text.find(u"　")
 
     if INDEX != -1:
         line_bot_api.reply_message(
@@ -76,7 +76,7 @@ def handle_message(event):
     if INDEX2 != -1:
         line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text="県名 地域(駅名) 食べたい物(行きたいお店)を教えてくれたらお店を探すよ"))
+        TextSendMessage(text="県名　地域(駅名)　食べたい物(行きたいお店)を教えてくれたらお店を探すよ"))
     if INDEX3 != -1:
         gnavi_response = gnaviserch(event.message.text)
         line_bot_api.reply_message(
@@ -157,7 +157,9 @@ def gnaviserch(word):
     hit = len(result_api['rest'])
     # ループで、ヒットした店名を表示させる
     for i in range(hit):
-        return "このお店はどお？{}".format(result_api['rest'][i]["name"])
+        name = "店名:{}".format(result_api['rest'][i]["name"])
+        url = "URL:{}".format(result_api['rest'][i]["url"])
+        return "こんなお店はどお？" + "\n" + name + "\n" + url
         
 # ポート番号の設定
 if __name__ == "__main__":
