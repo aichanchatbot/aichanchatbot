@@ -153,10 +153,8 @@ def gnaviserch(word):
     if not "rest" in result_api:
         return "レストランデータが見つからなかったよ"
 
-        
-    hit = len(result_api['rest'])
     # ループで、ヒットした店名を表示させる
-    for i in result_api['rest']:
+    for i in result_api[0]['rest']:
         name = "店名:{}".format(result_api['rest'][i]["name"])
         url = "URL:{}".format(result_api['rest'][i]["url"])
         return "こんなお店はどお？" + "\n" + name + "\n" + url
