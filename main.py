@@ -1,6 +1,6 @@
 import os
 import re
-from line_api import callback, handle_message
+from line_api import port, callback, handle_message
 from docomo_api import docomo_api
 from gnavi_api import gnaviserch
  
