@@ -10,6 +10,7 @@ from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage,
 )
 import os
+import re
 import requests
 import json
 from datetime import datetime
@@ -117,7 +118,9 @@ def handle_message(event):
             url = "URL:{}".format(result_api['rest'][i]["url"])
             info = name + "\n" + url + "\n"
             ret_list.append(info)
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text="{}".format(ret_list)))
+            text = ','.join(ret_list)
+            text_re = text.replace(',','')
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text="このお店はどお？{}".format(text_re)))
         
     else:
         # APIキー
