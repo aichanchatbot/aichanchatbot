@@ -78,10 +78,44 @@ def handle_message(event):
         event.reply_token,
         TextSendMessage(text="県名　地域(駅名)　食べたい物(行きたいお店)を教えてくれたらお店を探すよ"))
     if INDEX3 != -1:
-        gnavi_response = gnaviserch(event.message.text)
-        line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text="{}".format(gnavi_response)))
+        #レストラン検索APIのURL
+        url = "https://api.gnavi.co.jp/RestSearchAPI/v3/"
+        #パラメータの設定
+        params={}
+        params["keyid"] = "c201332cb35ea0c996aa9743cffb8ee3" #取得したアクセスキー(2019/5/22まで)
+        params["freeword"] = "{}".format(word)
+
+        #リクエスト結果
+        result_api = requests.get(url, params)
+        result_api = result_api.json()
+        
+        # エラーの場合
+        if "error" in result_api:
+            if "message" in result_api:
+                return (u"{0}".format(result_api["message"]))
+            else:
+                return "ごめんね。お店のデータが見つからなかったよ"
+
+        # ヒット件数取得
+        total_hit_count = None
+        if "total_hit_count" in result_api:
+            total_hit_count = result_api["total_hit_count"]
+
+        # ヒット件数が0以下、または、ヒット件数がなかったら最初に戻る
+        if total_hit_count is None or total_hit_count <= 0:
+            return "指定した内容ではヒットしなかったよ"
+
+        # レストランデータがなかったら最初に戻る
+        if not "rest" in result_api:
+            return "レストランデータが見つからなかったよ"
+
+        hit = len(result_api['rest'])
+        # ループで、ヒットした店名を表示させる
+        for i in range(hit):
+            name = "店名:{}".format(result_api['rest'][i]["name"])
+            url = "URL:{}".format(result_api['rest'][i]["url"])
+            info = "こんなお店はどお？" + "\n" + name + "\n" + url
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="{}".format(info)))
         
     else:
         # APIキー
@@ -121,46 +155,6 @@ def handle_message(event):
             event.reply_token,
             TextSendMessage(text=docomo_res))
 
-def gnaviserch(word):
-    #レストラン検索APIのURL
-    url = "https://api.gnavi.co.jp/RestSearchAPI/v3/"
-    #パラメータの設定
-    params={}
-    params["keyid"] = "c201332cb35ea0c996aa9743cffb8ee3" #取得したアクセスキー
-    params["freeword"] = "{}".format(word)
-
-    #リクエスト結果
-    result_api = requests.get(url, params)
-    result_api = result_api.json()
-
-    # エラーの場合
-    if "error" in result_api:
-        if "message" in result_api:
-            return (u"{0}".format(result_api["message"]))
-        else:
-            return "ごめんね。お店のデータが見つからなかったよ"
-    
-    # ヒット件数取得
-    total_hit_count = None
-    if "total_hit_count" in result_api:
-        total_hit_count = result_api["total_hit_count"]
-
-    # ヒット件数が0以下、または、ヒット件数がなかったら最初に戻る
-    if total_hit_count is None or total_hit_count <= 0:
-        return "指定した内容ではヒットしなかったよ"
-
-    # レストランデータがなかったら最初に戻る
-    if not "rest" in result_api:
-        return "レストランデータが見つからなかったよ"
-
-        
-    hit = len(result_api['rest'])
-    # ループで、ヒットした店名を表示させる
-    for i in range(hit):
-        name = "店名:{}".format(result_api['rest'][i]["name"])
-        url = "URL:{}".format(result_api['rest'][i]["url"])
-        return "こんなお店はどお？" + "\n" + name + "\n" + url
-        
 # ポート番号の設定
 if __name__ == "__main__":
 #    app.run()
