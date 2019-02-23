@@ -120,7 +120,7 @@ def handle_message(event):
             ret_list.append(info)
             text = ','.join(ret_list)
             text_re = text.replace(',','')
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text="このお店はどお？{}".format(text_re)))
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text="このお店はどお？\n{}".format(text_re)))
         
     else:
         # APIキー
