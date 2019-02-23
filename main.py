@@ -83,7 +83,7 @@ def handle_message(event):
         #パラメータの設定
         params={}
         params["keyid"] = "c201332cb35ea0c996aa9743cffb8ee3" #取得したアクセスキー(2019/5/22まで)
-        params["freeword"] = "{}".format(word)
+        params["freeword"] = "{}".format(event.message.text)
 
         #リクエスト結果
         result_api = requests.get(url, params)
