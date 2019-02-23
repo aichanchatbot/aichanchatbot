@@ -126,7 +126,7 @@ def gnaviserch(word):
     url = "https://api.gnavi.co.jp/RestSearchAPI/v3/"
     #パラメータの設定
     params={}
-    params["keyid"] = "af8de7fc02ff348220ba62e3c05de7f6" #取得したアクセスキー
+    params["keyid"] = "c201332cb35ea0c996aa9743cffb8ee3" #取得したアクセスキー
     params["freeword"] = "{}".format(word)
 
     #リクエスト結果
