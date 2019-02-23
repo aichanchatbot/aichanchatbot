@@ -115,7 +115,7 @@ def handle_message(event):
             name = "店名:{}".format(result_api['rest'][i]["name"])
             url = "URL:{}".format(result_api['rest'][i]["url"])
             info = "こんなお店はどお？" + "\n" + name + "\n" + url
-        str_list = [info]
+        str_list = [info, info, info]
         info_str = '\n'.join(str_list)
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text="{}".format(info_str)))
         
