@@ -111,13 +111,13 @@ def handle_message(event):
 
         hit = len(result_api['rest'])
         # ループで、ヒットした店名を表示させる
+        ret_list = []
         for i in range(hit):
             name = "店名:{}".format(result_api['rest'][i]["name"])
             url = "URL:{}".format(result_api['rest'][i]["url"])
-            info = "こんなお店はどお？" + "\n" + name + "\n" + url
-        str_list = [info[0], info[1], info[2]]
-        info_str = '\n'.join(str_list)
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text="{}".format(info_str)))
+            info = name + "\n" + url + "\n"
+            ret_list.append(info)
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text="{}".format(ret_list)))
         
     else:
         # APIキー
