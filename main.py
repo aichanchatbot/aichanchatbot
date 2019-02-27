@@ -83,7 +83,7 @@ def handle_message(event):
         url = "https://api.gnavi.co.jp/RestSearchAPI/v3/"
         #パラメータの設定
         params={}
-        params["keyid"] = "c201332cb35ea0c996aa9743cffb8ee3" #取得したアクセスキー(2019/5/22まで)
+        params["keyid"] = os.environ["YOUR_KEY_ID"] #取得したアクセスキー(2019/5/22まで)
         params["freeword"] = "{}".format(event.message.text)
 
         #リクエスト結果
@@ -124,7 +124,7 @@ def handle_message(event):
         
     else:
         # APIキー
-        APIKEY = "6b596f636d5262304453596f6a4d646a653643514f33446b586a57754831764462376a50427453794d5130"
+        APIKEY = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
         # リクエストボディ(JSON形式)
         send_data = {
             "language": "ja-JP",
