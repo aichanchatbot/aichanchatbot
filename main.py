@@ -125,8 +125,7 @@ def handle_message(event):
     else:
      
         # APIキー
-        YOUR_CHANNEL_ACCESS_TOKEN = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
-        APIKEY = "{}".format(YOUR_CHANNEL_ACCESS_TOKEN)
+        APIKEY = os.environ["DOCOMO_API_KEY"]
         # リクエストボディ(JSON形式)
         send_data = {
             "language": "ja-JP",
