@@ -123,8 +123,10 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text="このお店はどお？\n{}".format(text_re)))
         
     else:
+     
         # APIキー
-        APIKEY = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
+        YOUR_CHANNEL_ACCESS_TOKEN = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
+        APIKEY = "{}".format(YOUR_CHANNEL_ACCESS_TOKEN)
         # リクエストボディ(JSON形式)
         send_data = {
             "language": "ja-JP",
