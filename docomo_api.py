@@ -2,7 +2,6 @@ import os
 import requests
 import json
 from datetime import datetime
-from response import response
 
 
 def docomo_chat_api(text):
