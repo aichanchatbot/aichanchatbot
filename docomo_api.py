@@ -1,5 +1,4 @@
 import os
-import shelve
 import requests
 import json
 from datetime import datetime
