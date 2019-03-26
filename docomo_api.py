@@ -10,9 +10,6 @@ def docomo_chat_api(text):
     # 環境変数取得docomoAPIキー
     APIKEY = os.environ["DOCOMO_API_KEY"]
     APPID = os.environ["DOCOMO_CHAT_APPID"]
-    m = shelve.open("/tmp/mode")
-    mode = m["string"]
-    m.close()
     
     # リクエストボディ(JSON形式)
     send_data = {
@@ -26,7 +23,7 @@ def docomo_chat_api(text):
                 "nicknameY": "",
                 "sex": "",
                 "age": "",
-                "mode": "{}".format(mode)
+                "mode": "dialog"
                 },
             },
         "appSendTime": "YYYY-MM-DD hh:mm:ss"
