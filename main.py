@@ -59,7 +59,7 @@ def handle_message(event):
                     text = shelve.open('/tmp/test')
                     line_bot_api.reply_message(
                         event.reply_token,
-                        TextSendMessage(text=response(text)))
+                        TextSendMessage(text=text))
 
 # ポート番号の設定
 if __name__ == "__main__":
