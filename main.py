@@ -55,11 +55,11 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 
 def handle_message(event):
-    file = open('/tmp/test.txt', 'r')
-    string = file.read()
+    file2 = open('/tmp/test.txt', 'r')
+    string2 = file2.read()
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=string))
+        TextSendMessage(text=string2))
 
 # ポート番号の設定
 if __name__ == "__main__":
