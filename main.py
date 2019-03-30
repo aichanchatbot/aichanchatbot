@@ -3,12 +3,11 @@ from linebot import (LineBotApi, WebhookHandler)
 from linebot.exceptions import (InvalidSignatureError)
 from linebot.models import (MessageEvent, TextMessage, TextSendMessage)
 import os
-import shelve
 
-texts = shelve.open('/tmp/test')
-texts['string'] = 'テストだよ'
-texts.close()
-
+file = open('/tmp/test.txt', 'w')
+string = 'こんにちは'
+file.write(string)
+file.close()
 
 app = Flask(__name__)
 
@@ -56,10 +55,11 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 
 def handle_message(event):
-                    text = shelve.open('/tmp/test')
-                    line_bot_api.reply_message(
-                        event.reply_token,
-                        TextSendMessage(text=text))
+    file = open('/tmp/test.txt', 'r')
+    string = file.read()
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=string))
 
 # ポート番号の設定
 if __name__ == "__main__":
