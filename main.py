@@ -100,7 +100,7 @@ def handle_message(event):
 
     #日付
     elif INDEX4 != -1:
-        dt_now = datetime.datetime.now()
+        dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
         return_contents = "今日は" + str(dt_now.month) + "月" + str(dt_now.day) + "日だよ。"
         line_bot_api.reply_message(
         event.reply_token,
@@ -108,7 +108,7 @@ def handle_message(event):
 
     #時刻
     elif INDEX5 != -1:
-        dt_now = datetime.datetime.now()
+        dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
         return_contents = "今は" + str(dt_now.hour) + "時" + str(dt_now.minute) + "分だよ。"
         line_bot_api.reply_message(
         event.reply_token,
