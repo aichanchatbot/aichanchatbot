@@ -1,0 +1,8 @@
+Flask==1.0.2
+line-bot-sdk==1.8.0
+post==2018.11.20
+request==2018.11.20
+requests==2.21.0
+wikipedia==1.4.0
+pya3rt==1.1
+urllib3==1.24.1
