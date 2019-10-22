@@ -84,7 +84,7 @@ def handle_message(event):
 
     #名前
     elif INDEX2 != -1:
-        texts = random.choice('ぼくの名前はポコ太だよ', 'ぼくはフレンチブルドックのポコ太', 'ポコ太だよ')
+        texts = random.choice(('ぼくの名前はポコ太だよ', 'ぼくはフレンチブルドックのポコ太', 'ポコ太だよ'))
         line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=texts))
