@@ -2,6 +2,7 @@ import json
 import sys
 import urllib.parse
 import urllib.request
+import random
 
 WEATHER_URL="http://weather.livedoor.com/forecast/webservice/json/v1?city=%s"
 CITY_CODE="230010" # AICHI(NAGOYA)
@@ -49,16 +50,44 @@ def set_weather_date(text):
 
     if index1 != -1:
         msg = weather(0)
-        return msg
+        texts = set_msg(msg)
+        return texts
 
     elif index2 != -1:
         msg = weather(1)
-        return msg
+        texts = set_msg(msg)
+        return texts
 
     elif index3 != -1:
         msg = weather(2)
-        return msg
+        texts = set_msg(msg)
+        return texts
 
     else:
         msg = weather(0)
-        return msg
+        texts = set_msg(msg)
+        return texts
+
+def set_msg(text):
+    text1 = "{}".format(text)
+    text2 = random.choice(('お散歩できないなぁ。。。', '外で遊びたいのに。。。'))
+    text3 = random.choice(('雨は降らないみたい。', 'お散歩行けるね。'))
+    text4 = random.choice(('お散歩日よりだね。', 'お出かけしよう。'))
+
+    index10 = text1.find('雨')
+    index11 = text1.find('曇')
+    index12 = text1.find('晴')
+                           
+    if index10 != -1:
+        texts = str(text1)+str(text2)
+        return texts
+    elif index11 != -1:
+        texts = str(text1)+str(text3)
+        return texts
+    elif index12 != -1:
+        texts = str(text1)+str(text4)
+        return texts
+    else:
+        return text
+
+    
